@@ -19,6 +19,7 @@ import { GLOBAL_SLIDER_DIMENSION_FIELDS } from '../constants';
  * internally by default using getDefaultInitialViewState).
  * @param {number} props.height Current height of the component.
  * @param {number} props.width Current width of the component.
+ * @param {Array} [props.extensions] [deck.gl extensions](https://deck.gl/docs/developer-guide/custom-layers/layer-extensions) to add to the layers.
  * @param {boolean} [props.isLensOn] Whether or not to use the lens deafult (false).
  * @param {number} [props.lensSelection] Numeric index of the channel to be focused on by the lens (default 0).
  * @param {Array} [props.lensBorderColor] RGB color of the border of the lens (default [255, 255, 255]).
@@ -32,7 +33,7 @@ import { GLOBAL_SLIDER_DIMENSION_FIELDS } from '../constants';
  * @param {import('./VivViewer').Hover} [props.onHover] Callback that returns the picking info and the event (https://deck.gl/docs/api-reference/core/layer#onhover
  *     https://deck.gl/docs/developer-guide/interactivity#the-picking-info-object)
  * @param {Array} [props.transitionFields] A string array indicating which fields require a transition: Default: ['t', 'z'].
- * @param {Object} [props.glOptions] Additional options used when creating the WebGLContext.
+ * @param {Object} [props.deckProps] Additional options used when creating the DeckGL component.  See [the deck.gl docs.](https://deck.gl/docs/api-reference/core/deck#initialization-settings).  `layerFilter`, `layers`, `onViewStateChange`, `views`, `viewState`, `useDevicePixels`, and `getCursor` are already set.
  */
 const SideBySideViewer = props => {
   const {
@@ -57,7 +58,8 @@ const SideBySideViewer = props => {
     onHover,
     transitionFields = GLOBAL_SLIDER_DIMENSION_FIELDS,
     onViewportLoad,
-    glOptions
+    extensions = [],
+    deckProps
   } = props;
   const {
     newselections,
@@ -115,6 +117,7 @@ const SideBySideViewer = props => {
     lensRadius,
     lensBorderColor,
     lensBorderRadius,
+    extensions,
     transparentColor
   };
   const views = [detailViewRight, detailViewLeft];
@@ -127,7 +130,7 @@ const SideBySideViewer = props => {
       onViewStateChange={onViewStateChange}
       onHover={onHover}
       viewStates={viewStates}
-      glOptions={glOptions}
+      deckProps={deckProps}
     />
   ) : null;
 };

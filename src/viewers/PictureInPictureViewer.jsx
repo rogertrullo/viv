@@ -28,12 +28,13 @@ import { GLOBAL_SLIDER_DIMENSION_FIELDS } from '../constants';
  * internally by default using getDefaultInitialViewState).
  * @param {number} props.height Current height of the component.
  * @param {number} props.width Current width of the component.
- * @param {boolean} [props.isLensOn] Whether or not to use the lens (deafult false).
- * @param {number} [props.lensSelection] Numeric index of the channel to be focused on by the lens (default 0).
- * @param {number} [props.lensRadius] Pixel radius of the lens (default: 100).
- * @param {Array} [props.lensBorderColor] RGB color of the border of the lens (default [255, 255, 255]).
- * @param {number} [props.lensBorderRadius] Percentage of the radius of the lens for a border (default 0.02).
+ * @param {Array} [props.extensions] [deck.gl extensions](https://deck.gl/docs/developer-guide/custom-layers/layer-extensions) to add to the layers.
  * @param {Boolean} [props.clickCenter] Click to center the default view. Default is true.
+ * @param {boolean} [props.isLensOn] Whether or not to use the lens (deafult false). Must be used with the `LensExtension` in the `extensions` prop.
+ * @param {number} [props.lensSelection] Numeric index of the channel to be focused on by the lens (default 0). Must be used with the `LensExtension` in the `extensions` prop.
+ * @param {number} [props.lensRadius] Pixel radius of the lens (default: 100). Must be used with the `LensExtension` in the `extensions` prop.
+ * @param {Array} [props.lensBorderColor] RGB color of the border of the lens (default [255, 255, 255]). Must be used with the `LensExtension` in the `extensions` prop.
+ * @param {number} [props.lensBorderRadius] Percentage of the radius of the lens for a border (default 0.02). Must be used with the `LensExtension` in the `extensions` prop.
  * @param {Array} [props.transparentColor] An RGB (0-255 range) color to be considered "transparent" if provided.
  * In other words, any fragment shader output equal transparentColor (before applying opacity) will have opacity 0.
  * This parameter only needs to be a truthy value when using colormaps because each colormap has its own transparent color that is calculated on the shader.
@@ -43,7 +44,7 @@ import { GLOBAL_SLIDER_DIMENSION_FIELDS } from '../constants';
  *     https://deck.gl/docs/developer-guide/interactivity#the-picking-info-object)
  * @param {Array} [props.transitionFields] A string array indicating which fields require a transition when making a new selection: Default: ['t', 'z'].
  * @param {function} [props.onViewportLoad] Function that gets called when the data in the viewport loads.
- * @param {Object} [props.glOptions] Additional options used when creating the WebGLContext.
+ * @param {Object} [props.deckProps] Additional options used when creating the DeckGL component.  See [the deck.gl docs.](https://deck.gl/docs/api-reference/core/deck#initialization-settings).  `layerFilter`, `layers`, `onViewStateChange`, `views`, `viewState`, `useDevicePixels`, and `getCursor` are already set.
  */
 
 const PictureInPictureViewer = props => {
@@ -71,7 +72,8 @@ const PictureInPictureViewer = props => {
     onHover,
     transitionFields = GLOBAL_SLIDER_DIMENSION_FIELDS,
     onViewportLoad,
-    glOptions
+    extensions = [],
+    deckProps
   } = props;
   const {
     newselections,
@@ -108,6 +110,7 @@ const PictureInPictureViewer = props => {
     lensRadius,
     lensBorderColor,
     lensBorderRadius,
+    extensions,
     transparentColor
   };
   const views = [detailView];
@@ -127,7 +130,7 @@ const PictureInPictureViewer = props => {
       ...overview
     });
     views.push(overviewView);
-    layerProps.push(layerConfig);
+    layerProps.push({ ...layerConfig, extensions: [] });
     viewStates.push(overviewViewState);
   }
   if (!loader) return null;
@@ -139,7 +142,7 @@ const PictureInPictureViewer = props => {
       hoverHooks={hoverHooks}
       onViewStateChange={onViewStateChange}
       onHover={onHover}
-      glOptions={glOptions}
+      deckProps={deckProps}
     />
   );
 };
